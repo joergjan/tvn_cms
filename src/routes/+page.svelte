@@ -1,7 +1,35 @@
-<h1 class="text-3xl font-bold underline">Hello world!</h1>
+<script lang="ts">
+    import type { PageData } from "./$types";
+    import { currentPage } from "$lib/scripts/stores";
 
-<style lang="postcss">
-    :global(html) {
-        background-color: theme(colors.gray.100);
-    }
-</style>
+    export let data: PageData;
+</script>
+
+<h1>Hallo {data.name}!</h1>
+
+<div>
+    <button
+        class="bg-tvblue hover:bg-tvbluelight text-white group px-3 py-2 rounded-md"
+        on:click={() => {
+            $currentPage = 4;
+        }}
+    >
+        <a href="/post/create">
+            <p class="flex group-hover:scale-105">Neuen Beitrag erstellen</p></a
+        >
+    </button>
+    <button
+        class="bg-tvblue hover:bg-tvbluelight text-white group px-3 py-2 rounded-md"
+    >
+        <a href="/person/create"
+            ><p class="flex group-hover:scale-105">Person hinzufügen</p></a
+        >
+    </button>
+    <button
+        class="bg-tvblue hover:bg-tvbluelight text-white group px-3 py-2 rounded-md"
+    >
+        <a href="/riege"
+            ><p class="flex group-hover:scale-105">Riegen bearbeiten</p></a
+        >
+    </button>
+</div>

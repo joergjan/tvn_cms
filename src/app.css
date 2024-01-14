@@ -1,3 +1,114 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        @apply text-gray-800;
+        font-family: "Montserrat", sans-serif;
+        @apply font-normal;
+    }
+}
+/* 
+//
+//
+//
+		Image Galery
+//
+*/
+
+.stopScroll {
+    @apply h-full overflow-hidden;
+}
+
+/* 
+//
+//
+//
+		layout / menu
+//
+*/
+
+.burgerMenu {
+    @apply active:rotate-45 inline-flex items-center justify-center rounded-md p-2 active:text-gray-300;
+}
+
+.navbarTitle {
+    @apply inline-flex items-center border-b-2 border-transparent text-gray-500 hover:border-tvblue hover:text-gray-700 px-1 pt-1 font-medium hover:transition-all hover:duration-[600ms];
+}
+
+.navbarTitleSelected {
+    @apply inline-flex items-center border-b-2 border-tvblue text-gray-700 px-1 pt-1 font-medium;
+}
+
+/* 
+//
+//
+//
+		hover, buttons, badges
+//
+*/
+
+.button-gray {
+    @apply inline-flex items-center;
+    @apply border-gray-300 border rounded-md;
+    @apply shadow-sm hover:bg-gray-100;
+}
+
+.badge-blue {
+    @apply inline-flex items-center;
+    @apply bg-tvbluelight text-white rounded-2xl hover:bg-tvblue;
+}
+
+.hover {
+    @apply hover:text-gray-400;
+}
+
+.hover-scale {
+    @apply hover:scale-102;
+}
+
+.link {
+    @apply text-tvbluelight hover:text-tvblue underline font-normal text-lg;
+}
+
+/* 
+//
+//
+//
+		fonts and titles
+//
+*/
+
+h1 {
+    @apply pb-5 md:pt-5 text-4xl tracking-wide;
+}
+
+h2 {
+    @apply text-3xl pb-3;
+}
+
+h3 {
+    @apply text-2xl;
+}
+
+h4 {
+    @apply text-xl;
+}
+
+h5 {
+    @apply text-lg;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    @apply font-bold uppercase;
+}
+
+select,
+input,
+textarea {
+    @apply border-2 rounded-md py-1 px-2 border-gray-200 shadow-sm;
+}
