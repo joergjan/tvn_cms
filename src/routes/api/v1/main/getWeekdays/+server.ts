@@ -1,13 +1,23 @@
-import { prismaClient } from '$lib/server/db/prisma';
-import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
+import { prismaClient } from "$lib/server/db/prisma";
+import { PRIVATE_API_KEY } from "$env/static/private";
+import { json } from "@sveltejs/kit";
+import cookie from "cookie";
 
-export const GET: RequestHandler = async ({ locals }) => {
-	let weekdays = [];
+/** @type {import('./$types').RequestHandler} */
+export async function GET({ request }) {
+    const cookies = cookie.parse(request.headers.get("cookie") || "");
+    const user = cookies.user;
 
-	weekdays = await prismaClient.weekday.findMany({});
+    if (!user && request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY) {
+        return json({
+            error: "Unauthorized",
+        });
+    }
+    let weekdays = [];
 
-	return json({
-		weekdays: weekdays
-	});
-};
+    weekdays = await prismaClient.weekday.findMany({});
+
+    return json({
+        weekdays: weekdays,
+    });
+}

@@ -1,17 +1,28 @@
-import { prismaClient } from '$lib/server/db/prisma';
-import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
+import { prismaClient } from "$lib/server/db/prisma";
+import { PRIVATE_API_KEY } from "$env/static/private";
+import { json } from "@sveltejs/kit";
+import cookie from "cookie";
 
-export const GET: RequestHandler = async ({ locals }) => {
-	let personen = [];
+/** @type {import('./$types').RequestHandler} */
+export async function GET({ request }) {
+    const cookies = cookie.parse(request.headers.get("cookie") || "");
+    const session = cookies.auth_session;
 
-	personen = await prismaClient.person.findMany({
-		include: {
-			avatar: true
-		}
-	});
+    if (!session && request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY) {
+        return json({
+            error: "Unauthorized",
+        });
+    }
 
-	return json({
-		personen: personen
-	});
-};
+    let personen = [];
+
+    personen = await prismaClient.person.findMany({
+        include: {
+            avatar: true,
+        },
+    });
+
+    return json({
+        personen: personen,
+    });
+}

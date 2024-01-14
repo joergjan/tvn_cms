@@ -1,36 +1,46 @@
-import { prismaClient } from '$lib/server/db/prisma';
-import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
+import { prismaClient } from "$lib/server/db/prisma";
+import { PRIVATE_API_KEY } from "$env/static/private";
+import { json } from "@sveltejs/kit";
+import cookie from "cookie";
 
-export const GET: RequestHandler = async ({}) => {
-	let leiter = [];
+/** @type {import('./$types').RequestHandler} */
+export async function GET({ request }) {
+    const cookies = cookie.parse(request.headers.get("cookie") || "");
+    const user = cookies.user;
 
-	leiter = await prismaClient.person.findMany({
-		where: {
-			riegen: {
-				some: {}
-			}
-		},
-		include: {
-			avatar: true,
-			riegen: {
-				include: {
-					riege: {
-						include: {
-							image: true,
-							trainingszeiten: {
-								include: {
-									weekday: true
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	});
+    if (!user && request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY) {
+        return json({
+            error: "Unauthorized",
+        });
+    }
+    let leiter = [];
 
-	return json({
-		leiter: leiter
-	});
-};
+    leiter = await prismaClient.person.findMany({
+        where: {
+            riegen: {
+                some: {},
+            },
+        },
+        include: {
+            avatar: true,
+            riegen: {
+                include: {
+                    riege: {
+                        include: {
+                            image: true,
+                            trainingszeiten: {
+                                include: {
+                                    weekday: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    return json({
+        leiter: leiter,
+    });
+}
