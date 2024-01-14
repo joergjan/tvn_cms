@@ -4,58 +4,59 @@ import { json } from "@sveltejs/kit";
 import cookie from "cookie";
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ request, locals }) {
+export async function GET({ request, locals, params }) {
     const cookies = cookie.parse(request.headers.get("cookie") || "");
     const session = await locals.auth.validate();
 
     if (
-        cookies.auth_session != session.sessionId &&
-        request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY
+        (session && session.sessionId === cookies.auth_session) ||
+        request.headers.get("TVN-API-KEY") === PRIVATE_API_KEY
     ) {
-        return json({
-            error: "Unauthorized",
-        });
-    }
+        let personen = [];
 
-    let personen = [];
-
-    personen = await prismaClient.person.findMany({
-        where: {
-            OR: [
-                {
-                    riegen: {
-                        some: {
-                            riege: {
-                                name: {
-                                    contains: params.filter,
+        personen = await prismaClient.person.findMany({
+            where: {
+                OR: [
+                    {
+                        riegen: {
+                            some: {
+                                riege: {
+                                    name: {
+                                        contains: params.filter,
+                                    },
                                 },
                             },
                         },
                     },
-                },
-                {
-                    firstName: {
-                        contains: params.filter,
+                    {
+                        firstName: {
+                            contains: params.filter,
+                        },
                     },
-                },
-                {
-                    name: {
-                        contains: params.filter,
+                    {
+                        name: {
+                            contains: params.filter,
+                        },
                     },
-                },
-            ],
-        },
-        include: {
-            avatar: true,
-            riegen: {
-                include: {
-                    riege: true,
+                ],
+            },
+            include: {
+                avatar: true,
+                riegen: {
+                    include: {
+                        riege: true,
+                    },
                 },
             },
-        },
-    });
+        });
 
-    return json({
-        personen: personen,
-    });
+        return json({
+            personen: personen,
+        });
+    } else {
+        return json({
+            status: 401,
+            message: "UNAUTHORIZED REQUEST",
+        });
+    }
 }

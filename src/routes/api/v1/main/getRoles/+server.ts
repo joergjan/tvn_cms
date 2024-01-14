@@ -9,19 +9,20 @@ export async function GET({ request, locals }) {
     const session = await locals.auth.validate();
 
     if (
-        cookies.auth_session != session.sessionId &&
-        request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY
+        (session && session.sessionId === cookies.auth_session) ||
+        request.headers.get("TVN-API-KEY") === PRIVATE_API_KEY
     ) {
+        let roles = [];
+
+        roles = await prismaClient.role.findMany({});
+
         return json({
-            error: "Unauthorized",
+            roles: roles,
+        });
+    } else {
+        return json({
+            status: 401,
+            message: "UNAUTHORIZED REQUEST",
         });
     }
-
-    let roles = [];
-
-    roles = await prismaClient.role.findMany({});
-
-    return json({
-        roles: roles,
-    });
 }

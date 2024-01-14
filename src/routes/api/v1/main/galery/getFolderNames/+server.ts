@@ -21,8 +21,8 @@ export async function GET({ request, locals }) {
         });
     } else {
         return json({
-            status: 404,
-            message: "unauthorized request",
+            status: 401,
+            message: "UNAUTHORIZED REQUEST",
         });
     }
 }
