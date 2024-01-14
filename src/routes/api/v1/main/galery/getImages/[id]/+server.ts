@@ -1,16 +1,25 @@
-import { prismaClient } from '$lib/server/db/prisma';
-import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
+import { prismaClient } from "$lib/server/db/prisma";
+import { json } from "@sveltejs/kit";
+import { PRIVATE_API_KEY } from "$env/static/private";
+import cookie from "cookie";
 
-export const GET: RequestHandler = async ({ params }) => {
-	let folderNames = [];
+/** @type {import('./$types').RequestHandler} */
+export async function GET({ request, params }) {
+    const cookies = cookie.parse(request.headers.get("cookie") || "");
+    const user = cookies.user;
 
-	folderNames = await prismaClient.imageFolder.findMany({
-		where: { id: Number(params.id) },
-		cacheStrategy: { ttl: 60 }
-	});
+    if (!user && request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY) {
+        return json({
+            error: "Unauthorized",
+        });
+    }
+    let folderNames = [];
 
-	return json({
-		folderNames: folderNames
-	});
-};
+    folderNames = await prismaClient.imageFolder.findMany({
+        where: { id: Number(params.id) },
+    });
+
+    return json({
+        folderNames: folderNames,
+    });
+}

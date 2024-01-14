@@ -1,6 +1,5 @@
 import { prismaClient } from "$lib/server/db/prisma";
 import { PRIVATE_API_KEY } from "$env/static/private";
-
 import { json } from "@sveltejs/kit";
 import cookie from "cookie";
 
@@ -17,11 +16,7 @@ export async function GET({ request }) {
 
     let folderNames = [];
 
-    folderNames = await prismaClient.imageFolder.findMany({
-        include: {
-            image: true,
-        },
-    });
+    folderNames = await prismaClient.imageFolder.findMany({});
 
     return json({
         folderNames: folderNames,

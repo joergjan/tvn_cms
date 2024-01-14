@@ -1,29 +1,40 @@
-import { prismaClient } from '$lib/server/db/prisma';
-import type { RequestHandler } from '@sveltejs/kit';
-import { json } from '@sveltejs/kit';
+import { prismaClient } from "$lib/server/db/prisma";
+import { json } from "@sveltejs/kit";
+import { PRIVATE_API_KEY } from "$env/static/private";
+import cookie from "cookie";
 
-export const GET: RequestHandler = async () => {
-	let imageFolder = [];
+/** @type {import('./$types').RequestHandler} */
+export async function GET({ request }) {
+    const cookies = cookie.parse(request.headers.get("cookie") || "");
+    const user = cookies.user;
 
-	imageFolder = await prismaClient.imageFolder.findMany({
-		include: {
-			image: true
-		}
-	});
+    if (!user && request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY) {
+        return json({
+            error: "Unauthorized",
+        });
+    }
 
-	imageFolder = imageFolder.map((folder) => {
-		// For each folder, remove duplicate images based on the part of the url after the last '/'
-		const uniqueImages = Array.from(
-			new Set(folder.image.map((image) => image.url.split('/').pop()))
-		).map((urlPart) => {
-			return folder.image.find((image) => image.url.includes(urlPart));
-		});
+    let imageFolder = [];
 
-		// Return a new object with the unique images
-		return { ...folder, image: uniqueImages };
-	});
+    imageFolder = await prismaClient.imageFolder.findMany({
+        include: {
+            image: true,
+        },
+    });
 
-	return json({
-		imageFolder: imageFolder
-	});
-};
+    imageFolder = imageFolder.map((folder) => {
+        // For each folder, remove duplicate images based on the part of the url after the last '/'
+        const uniqueImages = Array.from(
+            new Set(folder.image.map((image) => image.url.split("/").pop()))
+        ).map((urlPart) => {
+            return folder.image.find((image) => image.url.includes(urlPart));
+        });
+
+        // Return a new object with the unique images
+        return { ...folder, image: uniqueImages };
+    });
+
+    return json({
+        imageFolder: imageFolder,
+    });
+}
