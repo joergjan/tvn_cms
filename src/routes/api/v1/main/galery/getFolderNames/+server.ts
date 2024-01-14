@@ -7,11 +7,9 @@ import cookie from "cookie";
 export async function GET({ request, locals }) {
     const cookies = cookie.parse(request.headers.get("cookie") || "");
     let session = null;
-    try {
-        session = await locals.auth.validate();
-    } catch (err) {}
 
     if (
+        !session &&
         cookies.auth_session != session.sessionId &&
         request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY
     ) {
