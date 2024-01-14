@@ -4,7 +4,7 @@ import { json } from "@sveltejs/kit";
 import cookie from "cookie";
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ request, locals }) {
+export async function GET({ params, request, locals }) {
     const cookies = cookie.parse(request.headers.get("cookie") || "");
     const session = await locals.auth.validate();
 
