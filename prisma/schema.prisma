@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-1.1.x", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "sqlserver"
+  url = env("PRIVATE_DATABASE_URL")
+}
+
+
+
+
+
+model Riege {
+  id          Int    @id @default(autoincrement())
+  name String
+  description String @db.Text
+  age String
+  person PersonRiege[]
+  trainingszeiten Trainingszeit[]
+  image Image[]
+}
+
+model Role {
+    id Int @id @default(autoincrement())
+    name String
+}
+
+model Person {
+    id Int @id @default(autoincrement())
+    firstName String
+    name String
+    isVorstand Boolean
+    email String
+    roleId Int
+    avatar Avatar?
+    riegen PersonRiege[]
+}
+
+model Trainingszeit {
+    id Int @id @default(autoincrement())
+    riege Riege @relation(fields: [riegeId], references: [id], onDelete: Cascade)
+    riegeId Int
+    weekday Weekday @relation(fields: [weekdayId], references: [id], onDelete: Cascade)
+    weekdayId Int
+    from DateTime @db.Time
+    to DateTime @db.Time
+}
+
+model Weekday {
+  id Int @id @default(autoincrement())
+  name String
+  trainingszeiten Trainingszeit[]
+}
+
+model imageFolder {
+  id Int @id @default(autoincrement())
+  name String
+  image Image[]
+}
+
+model PersonRiege {
+    person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+    personId Int
+    riege Riege @relation(fields: [riegeId], references: [id], onDelete: Cascade)
+    riegeId Int
+
+    @@id([personId, riegeId])
+}
+
+model Image {
+    id          Int    @id @default(autoincrement())
+    url         String
+    date        DateTime @default(now())
+    riege Riege? @relation(fields: [riegeId], references: [id], onDelete: Cascade)
+    riegeId Int?
+    imageFolder imageFolder? @relation(fields: [imageFolderId], references: [id], onDelete: Cascade)
+    imageFolderId Int?
+    post Post?
+}
+
+model Avatar {
+  id Int @id @default(autoincrement())
+  url String
+  date DateTime @default(now())
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId Int @unique
+}
+
+model Post {
+    id          Int    @id @default(autoincrement())
+    title String
+    text String
+    image Image @relation(fields: [imageId], references: [id], onDelete: Cascade)
+    imageId Int @unique
+    date DateTime @default(now())
+}
+
+model User {
+  id           String    @id @unique
+  name         String
+  username     String    @unique
+  isAdmin      Boolean @default(false)
+  isEditor     Boolean @default(false)
+  auth_session Session[]
+  key          Key[]
+}
+
+model Session {
+  id             String @id @unique
+  user_id        String
+  active_expires BigInt
+  idle_expires   BigInt
+  user           User   @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model Key {
+  id              String  @id @unique
+  hashed_password String?
+  user_id         String
+  user            User    @relation(references: [id], fields: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
