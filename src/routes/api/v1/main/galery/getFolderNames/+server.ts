@@ -17,7 +17,11 @@ export async function GET({ request }) {
 
     let folderNames = [];
 
-    folderNames = await prismaClient.imageFolder.findMany({});
+    folderNames = await prismaClient.imageFolder.findMany({
+        include: {
+            image: true,
+        },
+    });
 
     return json({
         folderNames: folderNames,
