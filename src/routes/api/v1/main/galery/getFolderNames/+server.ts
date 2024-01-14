@@ -6,7 +6,10 @@ import cookie from "cookie";
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ request, locals }) {
     const cookies = cookie.parse(request.headers.get("cookie") || "");
-    const session = await locals.auth.validate();
+    let session = null;
+    try {
+        session = await locals.auth.validate();
+    } catch (err) {}
 
     if (
         cookies.auth_session != session.sessionId &&
