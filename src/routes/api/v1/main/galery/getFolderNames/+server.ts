@@ -6,23 +6,23 @@ import cookie from "cookie";
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ request, locals }) {
     const cookies = cookie.parse(request.headers.get("cookie") || "");
-    let session = null;
+    const session = await locals.auth.validate();
 
     if (
-        !session &&
-        cookies.auth_session != session.sessionId &&
-        request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY
+        (session && session.sessionId === cookies.auth_session) ||
+        request.headers.get("TVN-API-KEY") === PRIVATE_API_KEY
     ) {
+        let folderNames = [];
+
+        folderNames = await prismaClient.imageFolder.findMany({});
+
         return json({
-            error: "Unauthorized",
+            folderNames: folderNames,
+        });
+    } else {
+        return json({
+            status: 404,
+            message: "unauthorized request",
         });
     }
-
-    let folderNames = [];
-
-    folderNames = await prismaClient.imageFolder.findMany({});
-
-    return json({
-        folderNames: folderNames,
-    });
 }
