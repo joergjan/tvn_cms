@@ -68,7 +68,7 @@
 <div class="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
     {#each [...riegen].reverse() as riege, i}
         <IntersectionObserver animation="fade-in">
-            <a href="/verwaltung/riege/{riege.id}">
+            <a href="/riege/{riege.id}">
                 <div
                     class="flex flex-col rounded-b-lg shadow-lg hover-scale text-center group"
                 >

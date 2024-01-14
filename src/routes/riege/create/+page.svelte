@@ -59,7 +59,7 @@
             console.error("Error:", response);
             return;
         }
-        window.location.href = "/verwaltung/riege";
+        window.location.href = "/riege";
     };
 </script>
 
@@ -67,7 +67,7 @@
     <h1>Riege erstellen</h1>
 
     <div class="flex items-center">
-        <a class="flex mb-3" href="/verwaltung/riege">
+        <a class="flex mb-3" href="/riege">
             <div class="flex mr-5 items-center group">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

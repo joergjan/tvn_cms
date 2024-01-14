@@ -38,7 +38,7 @@
     <h1>Beitrag erstellen</h1>
 
     <div class="flex items-center">
-        <a class="flex mb-3" href="/verwaltung/post">
+        <a class="flex mb-3" href="/post">
             <div class="flex mr-5 items-center group">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

@@ -37,7 +37,7 @@
 <ul class="grid grid-cols-3">
     {#each posts as post}
         <li class="relative rounded-lg shadow-lg group">
-            <a href={"/verwaltung/post/" + post.id}>
+            <a href={"/post/" + post.id}>
                 <img class="rounded-t-lg" src={post.image.url} alt="" />
                 <div class="p-2 text-center">
                     <h4>

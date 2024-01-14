@@ -142,7 +142,7 @@
     <h1>{riege.name} bearbeiten</h1>
 
     <div class="flex items-center">
-        <a href="/verwaltung/riege">
+        <a href="/riege">
             <div class="flex mr-5 items-center group">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

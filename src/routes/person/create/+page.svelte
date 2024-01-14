@@ -9,7 +9,7 @@
 
     onMount(async () => {
         try {
-            const response = await fetch("/tvn-api/v1/main/getRoles");
+            const response = await fetch("/api/v1/main/getRoles");
             const data = await response.json();
             roles = data.roles;
 
@@ -18,7 +18,7 @@
             console.error("Error:", error);
         }
         try {
-            const response = await fetch("/tvn-api/v1/main/getRiegen");
+            const response = await fetch("/api/v1/main/getRiegen");
             const data = await response.json();
             riegen = data.riegen;
 

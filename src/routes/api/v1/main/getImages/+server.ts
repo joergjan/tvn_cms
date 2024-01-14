@@ -4,11 +4,14 @@ import { json } from "@sveltejs/kit";
 import cookie from "cookie";
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ request }) {
+export async function GET({ request, locals }) {
     const cookies = cookie.parse(request.headers.get("cookie") || "");
-    const user = cookies.user;
+    const session = await locals.auth.validate();
 
-    if (!user && request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY) {
+    if (
+        cookies.auth_session != session.sessionId &&
+        request.headers.get("TVN-API-KEY") !== PRIVATE_API_KEY
+    ) {
         return json({
             error: "Unauthorized",
         });

@@ -103,7 +103,7 @@
     >
         {#each personen as person}
             <div class="flex justify-center">
-                <a href={"/verwaltung/person/" + person.id} class="group">
+                <a href={"/person/" + person.id} class="group">
                     <div
                         class="relative group-hover:scale-102 transition-all duration-100"
                     >
