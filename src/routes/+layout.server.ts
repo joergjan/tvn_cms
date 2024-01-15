@@ -1,4 +1,5 @@
 import type { LayoutServerLoad } from "./$types";
+import { auth } from "$lib/server/db/lucia";
 
 export const load: LayoutServerLoad = async ({ locals }) => {
     const session = await locals.auth.validate();
