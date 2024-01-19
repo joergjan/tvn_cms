@@ -39,6 +39,11 @@ export async function GET({ request, locals }) {
                     },
                     role: true,
                 },
+                orderBy: {
+                    role: {
+                        id: "desc",
+                    },
+                },
                 cacheStrategy: {
                     ttl: 60,
                 },
