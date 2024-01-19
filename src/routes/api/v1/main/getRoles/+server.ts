@@ -2,6 +2,7 @@ import { prismaClient } from "$lib/server/db/prisma";
 import { PRIVATE_API_KEY } from "$env/static/private";
 import { json } from "@sveltejs/kit";
 import cookie from "cookie";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ request, locals }) {
@@ -14,7 +15,11 @@ export async function GET({ request, locals }) {
     ) {
         let roles = [];
 
-        roles = await prismaClient.role.findMany({});
+        roles = await prismaClient.$extends(withAccelerate()).role.findMany({
+            cacheStrategy: {
+                ttl: 10800,
+            },
+        });
 
         return json({
             roles: roles,

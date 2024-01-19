@@ -19,8 +19,7 @@ export async function GET({ request, locals }) {
             .$extends(withAccelerate())
             .galery.findMany({
                 cacheStrategy: {
-                    ttl: 0,
-                    swr: 0,
+                    ttl: 60,
                 },
             });
 

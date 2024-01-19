@@ -2,6 +2,7 @@ import { prismaClient } from "$lib/server/db/prisma";
 import { PRIVATE_API_KEY } from "$env/static/private";
 import { json } from "@sveltejs/kit";
 import cookie from "cookie";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ request, locals }) {
@@ -14,11 +15,13 @@ export async function GET({ request, locals }) {
     ) {
         let personen = [];
 
-        personen = await prismaClient.person.findMany({
-            include: {
-                image: true,
-            },
-        });
+        personen = await prismaClient
+            .$extends(withAccelerate())
+            .person.findMany({
+                include: {
+                    image: true,
+                },
+            });
 
         return json({
             personen: personen,

@@ -2,6 +2,7 @@ import { prismaClient } from "$lib/server/db/prisma";
 import { PRIVATE_API_KEY } from "$env/static/private";
 import { json } from "@sveltejs/kit";
 import cookie from "cookie";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ request, locals }) {
@@ -14,28 +15,34 @@ export async function GET({ request, locals }) {
     ) {
         let vorstand = [];
 
-        vorstand = await prismaClient.person.findMany({
-            where: {
-                isVorstand: true,
-            },
-            include: {
-                image: true,
-                riegen: {
-                    include: {
-                        riege: {
-                            include: {
-                                image: true,
-                                trainingszeiten: {
-                                    include: {
-                                        weekday: true,
+        vorstand = await prismaClient
+            .$extends(withAccelerate())
+            .person.findMany({
+                where: {
+                    isVorstand: true,
+                },
+                include: {
+                    image: true,
+                    riegen: {
+                        include: {
+                            riege: {
+                                include: {
+                                    image: true,
+                                    trainingszeiten: {
+                                        include: {
+                                            weekday: true,
+                                        },
                                     },
                                 },
                             },
                         },
                     },
+                    role: true,
                 },
-            },
-        });
+                cacheStrategy: {
+                    ttl: 60,
+                },
+            });
 
         return json({
             vorstand: vorstand,

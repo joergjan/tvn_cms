@@ -71,6 +71,12 @@
                             alt={riege.name}
                             loading="lazy"
                         />
+                    {:else}
+                        <img
+                            class="h-48 w-full rounded-t-lg object-cover"
+                            src="/images/alleRiegen.jpg"
+                            alt="alle Riegen"
+                        />
                     {/if}
                     <div class="flex flex-1 flex-col p-6">
                         <div class="flex-1">
@@ -94,7 +100,7 @@
                         </div>
                     </div>
                     <div
-                        class="absolute w-full h-full top-0 left-0 bg-black rounded-md group-hover:opacity-20 opacity-0 transition-all duration-100"
+                        class="absolute w-full h-full top-0 left-0 bg-black rounded-lg group-hover:opacity-20 opacity-0 transition-all duration-100"
                     />
                     <div
                         class="group-hover:opacity-100 opacity-0 absolute transfrom -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 z-10 transition-all duration-100"

@@ -1,8 +1,6 @@
 import type { Actions, PageServerLoad } from "../$types";
 import { error, fail, redirect } from "@sveltejs/kit";
 import { prismaClient } from "$lib/server/db/prisma";
-import { PRIVATE_AZURE_BLOB_SERVICE_SAS_URL } from "$env/static/private";
-import { BlobServiceClient } from "@azure/storage-blob";
 
 export const load: PageServerLoad = async ({ params, locals }) => {
     const session = await locals.auth.validate();
@@ -77,11 +75,9 @@ export const actions: Actions = {
 
         try {
             leiter.forEach((leiterItem) => {
-                let addedLeiter;
-
                 // Define the async function and immediately invoke it
                 (async () => {
-                    addedLeiter = await prismaClient.riege.update({
+                    await prismaClient.riege.update({
                         where: { id: Number(params.id) },
                         data: {
                             person: {
@@ -235,15 +231,14 @@ export const actions: Actions = {
             return fail(500, { message: "Failed to delete entry" });
         }
 
-        throw redirect(302, "/verwaltung/riege");
+        throw redirect(302, "/riege");
     },
+
     updateImage: async ({ params, locals, request }) => {
         const session = await locals.auth.validate();
         if (!session) {
             throw redirect(302, "/");
         }
-
-        console.log("this fires");
 
         const formData = Object.fromEntries(await request.formData());
 
@@ -259,19 +254,16 @@ export const actions: Actions = {
             imageArray.push(parseInt(formData.img3 as string));
         }
 
-        try {
-            await prismaClient.riege.update({
-                where: { id: Number(params.id) },
-                data: {
-                    image: {
-                        set: imageArray?.map((id) => ({ id })),
-                    },
+        await prismaClient.riege.update({
+            where: { id: Number(params.id) },
+            data: {
+                image: {
+                    set: imageArray?.map((id) => ({ id })),
                 },
-            });
-        } catch (err) {
-            console.error("Error updating images:", err);
-
-            return fail(500, { message: "Failed to update images entry" });
-        }
+            },
+            include: {
+                image: true,
+            },
+        });
     },
 };

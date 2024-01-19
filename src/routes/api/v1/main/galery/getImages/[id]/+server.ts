@@ -23,8 +23,7 @@ export async function GET({ request, locals, params }) {
                     image: true,
                 },
                 cacheStrategy: {
-                    ttl: 0,
-                    swr: 0,
+                    ttl: 60,
                 },
             });
 

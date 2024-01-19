@@ -15,15 +15,19 @@ export async function GET({ request, locals }) {
     ) {
         let galeries = [];
 
-        galeries = await prismaClient.galery // .$extends(withAccelerate())
-            .findMany({
+        galeries = await prismaClient
+            .$extends(withAccelerate())
+            .galery.findMany({
                 include: {
-                    image: true,
+                    image: {
+                        orderBy: {
+                            date: "asc",
+                        },
+                    },
                 },
-                /*     cacheStrategy: {
-                    ttl: 0,
-                    swr: 0,
-                },*/
+                cacheStrategy: {
+                    ttl: 60,
+                },
             });
 
         return json({

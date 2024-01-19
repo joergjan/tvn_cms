@@ -1,12 +1,11 @@
 <script lang="ts">
     import type { PageData } from "../$types";
     import { onMount } from "svelte";
-    import { BlobServiceClient } from "@azure/storage-blob";
     import RiegeModal from "$lib/components/RiegeModal.svelte";
     import { tick } from "svelte";
     import { currentPage } from "$lib/scripts/stores";
     import IntersectionObserver from "$lib/components/IntersectionObserver.svelte";
-    import { enhance } from "$app/forms";
+    import { enhance, deserialize, applyAction } from "$app/forms";
 
     export let data: PageData;
     $: ({ riege } = data);
@@ -101,20 +100,6 @@
             console.error("Error:", error);
         }
 
-        riege.image.forEach((riegeImage, index) => {
-            if (
-                galery.image.some(
-                    (galleryImage) => galleryImage.id === riegeImage.id
-                )
-            ) {
-                previewImages.push(index);
-                selectedImages.push(riegeImage.id);
-            }
-        });
-
-        previewImages = previewImages;
-        selectedImages = selectedImages;
-
         if (riege.trainingszeiten.length > 1) {
             additionalTrainingszeit = true;
         }
@@ -127,8 +112,28 @@
             textareas.forEach((textarea) => adjustHeight({ target: textarea }));
         }
 
+        handleImageUpdate();
         adjustAllTextareas();
     });
+
+    function handleImageUpdate() {
+        console.log("imageupdate called");
+        if (riege?.image && galery?.image) {
+            galery.image.forEach((galeryImage, index) => {
+                if (
+                    riege.image.some(
+                        (riegeImage) => riegeImage.id === galeryImage.id
+                    )
+                ) {
+                    previewImages.push(index);
+                    selectedImages.push(galeryImage.id);
+                }
+            });
+
+            previewImages = previewImages;
+            selectedImages = selectedImages;
+        }
+    }
 
     function getHours(isoTime) {
         let date = new Date(isoTime);
@@ -159,29 +164,6 @@
             if (riege.person[i].person.name != "") {
                 additionalLeiter[i] = true;
             }
-        }
-    }
-
-    async function handleSubmit(event) {
-        event.preventDefault();
-
-        const form = document.querySelector('form[action="?/updateImage"]');
-        const img1 = form.querySelector('input[name="img1"]');
-        const img2 = form.querySelector('input[name="img2"]');
-        const img3 = form.querySelector('input[name="img3"]');
-
-        selectedImages[0] ? (img1.value = selectedImages[0]) : null;
-        selectedImages[1] ? (img2.value = selectedImages[1]) : null;
-        selectedImages[2] ? (img3.value = selectedImages[2]) : null;
-
-        const formData = new FormData(form);
-        const response = await fetch(form.action, {
-            method: "POST",
-            body: formData,
-        });
-
-        if (!response.ok) {
-            console.error("Error submitting form:", response.statusText);
         }
     }
 </script>
@@ -460,37 +442,39 @@
                 <form
                     action="?/updateImage"
                     method="POST"
-                    use:enhance
-                    on:submit|preventDefault={handleSubmit}
-                >
-                    <input hidden type="number" name="img1" id="img1" />
-                    <input hidden type="number" name="img2" id="img2" />
-                    <input hidden type="number" name="img3" id="img3" />
+                    use:enhance={({ formData }) => {
+                        const index = previewImages.indexOf(i);
 
+                        if (index !== -1) {
+                            previewImages.splice(index, 1);
+                            selectedImages.splice(index, 1);
+                            previewImages = previewImages;
+                            selectedImages = selectedImages;
+                        } else {
+                            previewImages.push(i);
+                            selectedImages.push(galery.image[i].id);
+                            if (previewImages.length > 3) {
+                                previewImages.shift();
+                                selectedImages.shift();
+                            }
+                            previewImages = previewImages;
+                            selectedImages = selectedImages;
+                        }
+
+                        selectedImages.forEach((image, index) => {
+                            formData.append(`img${index + 1}`, String(image));
+                        });
+                    }}
+                >
                     <button
                         class={previewImages.indexOf(i) == -1
                             ? "absolute inset-0 transition duration-100 group hover:bg-blue-500 hover:bg-opacity-50 rounded-md"
                             : "absolute inset-0 transition duration-100 group bg-blue-500 bg-opacity-50 rounded-md"}
-                        on:click={() => {
-                            const index = previewImages.indexOf(i);
-                            if (index !== -1) {
-                                previewImages.splice(index, 1);
-                                previewImages = previewImages;
-                            } else {
-                                previewImages.push(i);
-                                selectedImages.push(galery.image[i].id);
-                                if (previewImages.length > 3) {
-                                    previewImages.shift();
-                                    selectedImages.shift();
-                                }
-                                previewImages = previewImages;
-                            }
-                        }}
                     >
                         <div
                             class={previewImages.indexOf(i) == -1
-                                ? "hidden group-hover:flex justify-center items-center"
-                                : "flex justify-center items-center"}
+                                ? "hidden"
+                                : "flex justify-center items-center relative"}
                         >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -503,6 +487,13 @@
                                     d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"
                                 />
                             </svg>
+                        </div>
+                        <div
+                            class={previewImages.indexOf(i) == -1
+                                ? "hidden"
+                                : "absolute top-5 left-0 right-0 text-white font-black text-3xl"}
+                        >
+                            {previewImages.indexOf(i) + 1}
                         </div>
                     </button>
                 </form>

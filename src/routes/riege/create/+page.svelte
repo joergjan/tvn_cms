@@ -216,7 +216,7 @@
             {/if}
         {/each}
 
-        <div>
+        <div class="my-3">
             <select name="galery" id="galery" required>
                 {#each galeries as galery}
                     <option value={galery.id}>{galery.name} </option>

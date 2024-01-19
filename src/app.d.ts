@@ -11,6 +11,7 @@ declare global {
         // interface PageData {}
         // interface Platform {}
     }
+
     var __prisma: PrismaClient;
 
     /// <reference types="lucia-auth" />

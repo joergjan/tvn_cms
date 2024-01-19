@@ -2,6 +2,7 @@ import { prismaClient } from "$lib/server/db/prisma";
 import { PRIVATE_API_KEY } from "$env/static/private";
 import { json } from "@sveltejs/kit";
 import cookie from "cookie";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ request, locals }) {
@@ -14,7 +15,15 @@ export async function GET({ request, locals }) {
     ) {
         let weekdays = [];
 
-        weekdays = await prismaClient.weekday.findMany({});
+        weekdays = await prismaClient
+            .$extends(withAccelerate())
+            .weekday.findMany({
+                cacheStrategy: {
+                    ttl: 10800,
+                },
+            });
+
+        prismaClient.$disconnect();
 
         return json({
             weekdays: weekdays,

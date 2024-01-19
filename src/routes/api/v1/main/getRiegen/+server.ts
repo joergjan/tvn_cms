@@ -2,6 +2,7 @@ import { prismaClient } from "$lib/server/db/prisma";
 import { PRIVATE_API_KEY } from "$env/static/private";
 import { json } from "@sveltejs/kit";
 import cookie from "cookie";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ request, locals }) {
@@ -14,7 +15,7 @@ export async function GET({ request, locals }) {
     ) {
         let riegen = [];
 
-        riegen = await prismaClient.riege.findMany({
+        riegen = await prismaClient.$extends(withAccelerate()).riege.findMany({
             include: {
                 trainingszeiten: {
                     include: {
@@ -33,6 +34,9 @@ export async function GET({ request, locals }) {
                 image: {
                     take: 3,
                 },
+            },
+            cacheStrategy: {
+                ttl: 60,
             },
         });
 

@@ -52,6 +52,11 @@
     }
 </script>
 
+<h1>Wochentage</h1>
+
+<p>Änderungen benötigen 3 Stunden, bis sie ersichtlich sind.</p>
+<div class="mb-5"></div>
+
 <svelte:window on:click={handleClickOutside} />
 
 <form action="?/createWeekday" method="POST" class="w-80">

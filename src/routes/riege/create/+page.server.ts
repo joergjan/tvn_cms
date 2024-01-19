@@ -45,7 +45,6 @@ export const actions: Actions = {
                 console.error("Failed to create new Riege" + e);
                 return fail(500, { message: "Failed to create new Riege" });
             }
-            console.log(newRiege);
 
             try {
                 leiter.forEach((leiterItem) => {
@@ -71,7 +70,6 @@ export const actions: Actions = {
                                 },
                             },
                         });
-                        console.log(addedLeiter);
                     })();
                 });
             } catch (e) {
