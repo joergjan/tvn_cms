@@ -16,7 +16,7 @@ export async function GET({ request, locals }) {
 
         personen = await prismaClient.person.findMany({
             include: {
-                avatar: true,
+                image: true,
             },
         });
 

@@ -19,7 +19,7 @@ export async function GET({ request, locals }) {
                 isVorstand: true,
             },
             include: {
-                avatar: true,
+                image: true,
                 riegen: {
                     include: {
                         riege: {

@@ -147,7 +147,6 @@
                 id="image"
                 name="image"
                 accept=".jpg, .jpeg, .png, .webp"
-                required
             />
         </div>
 

@@ -16,8 +16,6 @@
     export let images = [];
     let active = 0;
 
-    console.log(personen);
-
     function handleClick() {
         close = true;
         dispatch("close", close);
@@ -200,7 +198,7 @@
                                 <img
                                     loading="lazy"
                                     class="absolute top-0 left-0 h-full w-full object-cover transition-opacity duration-500 ease-in-out"
-                                    src="/images/riegen/alleRiegen.jpg"
+                                    src="/images/alleRiegen.jpg"
                                     alt="alle Riegen"
                                 />
                             </div>
@@ -243,13 +241,21 @@
                                     class="flex items-center sm:col-span-1 hover:scale-105"
                                 >
                                     <div>
-                                        <img
-                                            loading="lazy"
-                                            class="sm:h-10 sm:w-10 h-8 w-8 rounded-full"
-                                            src={leit.person.avatar.url +
-                                                "?h=150&w=150&&crop=faces&lossless=false&auto=compress&fit=crop&fm=webp"}
-                                            alt={leit.person.firstName}
-                                        />
+                                        {#if leit.person.image}
+                                            <img
+                                                loading="lazy"
+                                                class="sm:h-10 sm:w-10 h-8 w-8 rounded-full"
+                                                src={leit.person.image.url +
+                                                    "?h=150&w=150&&crop=faces&lossless=false&auto=compress&fit=crop&fm=webp"}
+                                                alt={leit.person.firstName}
+                                            />
+                                        {:else}
+                                            <img
+                                                loading="lazy"
+                                                class="sm:h-10 sm:w-10 h-8 w-8 rounded-full"
+                                                src="/images/avatar.webp"
+                                                alt={leit.person.firstName}
+                                            />{/if}
                                     </div>
 
                                     <div class="ml-3">

@@ -1,28 +1,8 @@
 import type { Actions, PageServerLoad } from "../$types";
 import { fail, redirect } from "@sveltejs/kit";
 import { prismaClient } from "$lib/server/db/prisma";
-import {
-    PRIVATE_AZURE_BLOB_SERVICE_SAS_URL,
-    PRIVATE_API_KEY,
-} from "$env/static/private";
-import { BlobServiceClient } from "@azure/storage-blob";
-
-export const load: PageServerLoad = async ({ fetch, locals }) => {
-    const session = await locals.auth.validate();
-    if (!session) {
-        throw redirect(302, "/login");
-    }
-
-    const folderNames = await fetch("/api/v1/main/galery/getFolderNames", {
-        headers: {
-            "TVN-API-KEY": PRIVATE_API_KEY,
-        },
-    });
-
-    return {
-        folderNames: await folderNames.json(),
-    };
-};
+import { PRIVATE_API_KEY, BLOB_READ_WRITE_TOKEN } from "$env/static/private";
+import { put, del } from "@vercel/blob";
 
 export const actions: Actions = {
     uploadImages: async ({ request, locals }) => {
@@ -36,24 +16,7 @@ export const actions: Actions = {
         const images = data.getAll("images") as File[];
 
         // Image upload
-        const blobSasUrl = PRIVATE_AZURE_BLOB_SERVICE_SAS_URL;
-        const blobServiceClient = new BlobServiceClient(blobSasUrl);
-        const containerName = "galery";
-        const containerClient =
-            blobServiceClient.getContainerClient(containerName);
-
         const folderId = Number(formData.folderId);
-        const riegeId = Number(formData.riegeId);
-        let riege;
-
-        try {
-            riege = await prismaClient.riege.findUnique({
-                where: { id: riegeId },
-            });
-        } catch (err) {
-            console.log("Error finding riege", err.message);
-            return fail(500, { error: err.message });
-        }
 
         const uploadPromises = images.map(async (image) => {
             if (!(image instanceof File)) {
@@ -62,16 +25,16 @@ export const actions: Actions = {
 
             let blobUrl;
             try {
-                const blobName = `${riege.name}/${image.name}`
+                const blobName = `galery/${image.name}`
                     .toLowerCase()
                     .replace(/\s/g, "");
-                const blockBlobClient =
-                    containerClient.getBlockBlobClient(blobName);
-                const fileBuffer = await new Response(
-                    image.stream()
-                ).arrayBuffer();
-                await blockBlobClient.uploadData(fileBuffer);
-                blobUrl = `https://tvn-galery.imgix.net/${blobName}`;
+
+                const { url } = await put(blobName, image, {
+                    access: "public",
+                    token: BLOB_READ_WRITE_TOKEN,
+                });
+
+                blobUrl = url;
             } catch (err) {
                 console.log("Error uploading images to blob", err.message);
                 return fail(500, { error: err.message });
@@ -81,15 +44,13 @@ export const actions: Actions = {
                 const existingImage = await prismaClient.image.findFirst({
                     where: {
                         url: blobUrl,
-                        riegeId: riegeId,
                     },
                 });
                 if (!existingImage) {
                     await prismaClient.image.create({
                         data: {
                             url: blobUrl,
-                            riegeId: riegeId,
-                            imageFolderId: folderId,
+                            galeryId: folderId,
                         },
                     });
                 }
@@ -100,5 +61,92 @@ export const actions: Actions = {
         });
 
         await Promise.all(uploadPromises);
+    },
+    createGalery: async ({ request, locals }) => {
+        const session = await locals.auth.validate();
+        if (!session) {
+            throw redirect(302, "/");
+        }
+
+        const formData = Object.fromEntries(await request.formData());
+
+        try {
+            await prismaClient.galery.create({
+                data: {
+                    name: (formData.galery as string) || "",
+                },
+            });
+        } catch (e) {
+            console.error("Failed to create new galery" + e);
+            return fail(500, { message: "Failed to create new galery" });
+        }
+
+        throw redirect(302, "/galery");
+    },
+    updateGalery: async ({ request, locals }) => {
+        const session = await locals.auth.validate();
+        if (!session) {
+            throw redirect(302, "/");
+        }
+
+        const formData = Object.fromEntries(await request.formData());
+
+        try {
+            await prismaClient.galery.update({
+                where: { id: Number(formData.id) },
+                data: {
+                    name: (formData.galery as string) || "",
+                },
+            });
+        } catch (e) {
+            console.error("Failed to create new galery" + e);
+            return fail(500, { message: "Failed to create new galery" });
+        }
+
+        throw redirect(302, "/galery");
+    },
+    deleteGalery: async ({ request, locals }) => {
+        const session = await locals.auth.validate();
+
+        if (session?.user?.isAdmin) {
+            const formData = Object.fromEntries(await request.formData());
+
+            try {
+                await prismaClient.galery.delete({
+                    where: { id: Number(formData.id) },
+                });
+            } catch (e) {
+                console.error("Failed to delete galery" + e);
+                return fail(500, { message: "Failed to delete galery" });
+            }
+
+            throw redirect(302, "/galery");
+        }
+        throw redirect(302, "https://www.tvnussbaumen.ch");
+    },
+    deleteImage: async ({ request, locals }) => {
+        const session = await locals.auth.validate();
+        if (!session) {
+            throw redirect(302, "/");
+        }
+
+        const formData = Object.fromEntries(await request.formData());
+        const url = formData.url as string;
+
+        try {
+            await del(url, { token: BLOB_READ_WRITE_TOKEN });
+        } catch (e) {
+            console.error("Failed to delezte image" + e);
+            return fail(500, { message: "Failed to delete image" });
+        }
+
+        try {
+            await prismaClient.image.delete({
+                where: { id: Number(formData.id) },
+            });
+        } catch (e) {
+            console.error("Failed to delezte image" + e);
+            return fail(500, { message: "Failed to delete image" });
+        }
     },
 };

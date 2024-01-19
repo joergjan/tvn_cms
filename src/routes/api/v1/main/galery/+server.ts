@@ -2,6 +2,7 @@ import { prismaClient } from "$lib/server/db/prisma";
 import { PRIVATE_API_KEY } from "$env/static/private";
 import { json } from "@sveltejs/kit";
 import cookie from "cookie";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ request, locals }) {
@@ -12,12 +13,19 @@ export async function GET({ request, locals }) {
         (session && session.sessionId === cookies.auth_session) ||
         request.headers.get("TVN-API-KEY") === PRIVATE_API_KEY
     ) {
-        let folderNames = [];
+        let galeries = [];
 
-        folderNames = await prismaClient.imageFolder.findMany({});
+        galeries = await prismaClient
+            .$extends(withAccelerate())
+            .galery.findMany({
+                cacheStrategy: {
+                    ttl: 0,
+                    swr: 0,
+                },
+            });
 
         return json({
-            folderNames: folderNames,
+            galeries: galeries,
         });
     } else {
         return json({

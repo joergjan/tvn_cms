@@ -9,6 +9,7 @@
     let personen = [];
     let riegen = [];
     let additionalLeiter = [true, false, false, false];
+    let galeries: Galery[] = [];
 
     onMount(async () => {
         try {
@@ -16,6 +17,17 @@
             const data = await response.json();
 
             weekdays = data.weekdays;
+
+            isLoading = false;
+        } catch (error) {
+            console.error("Error:", error);
+        }
+        try {
+            const response = await fetch("/api/v1/main/galery");
+            const data = await response.json();
+
+            galeries = data.galeries;
+            console.log;
 
             isLoading = false;
         } catch (error) {
@@ -203,6 +215,14 @@
                 </div>
             {/if}
         {/each}
+
+        <div>
+            <select name="galery" id="galery" required>
+                {#each galeries as galery}
+                    <option value={galery.id}>{galery.name} </option>
+                {/each}
+            </select>
+        </div>
 
         <div>
             <button

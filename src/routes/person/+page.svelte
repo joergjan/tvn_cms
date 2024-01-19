@@ -134,14 +134,25 @@
                         <div
                             class="absolute w-full h-full top-0 left-0 bg-black rounded-md group-hover:opacity-20 opacity-0 transition-all duration-100"
                         />
-                        <img
-                            height="180"
-                            width="180"
-                            class="rounded-lg shadow-md"
-                            src={person.avatar.url +
-                                "?h=180&w=180&crop=faces&lossless=false&auto=compress&fit=crop&fm=webp"}
-                            alt=""
-                        />
+
+                        {#if person.image}
+                            <img
+                                height="180"
+                                width="180"
+                                class="rounded-lg shadow-md"
+                                src={person.image.url +
+                                    "?h=180&w=180&crop=faces&lossless=false&auto=compress&fit=crop&fm=webp"}
+                                alt=""
+                            />
+                        {:else}
+                            <img
+                                height="180"
+                                width="180"
+                                class="rounded-lg shadow-md"
+                                src="/images/avatar.webp"
+                                alt=""
+                            />
+                        {/if}
                     </div>
                 </a>
             </div>

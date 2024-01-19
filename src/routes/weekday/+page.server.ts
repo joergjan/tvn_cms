@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-    createRole: async ({ request, locals }) => {
+    createWeekday: async ({ request, locals }) => {
         const session = await locals.auth.validate();
         if (!session) {
             throw redirect(302, "/");
@@ -19,19 +19,19 @@ export const actions: Actions = {
         const formData = Object.fromEntries(await request.formData());
 
         try {
-            await prismaClient.role.create({
+            await prismaClient.weekday.create({
                 data: {
-                    name: (formData.role as string) || "",
+                    name: (formData.weekday as string) || "",
                 },
             });
         } catch (e) {
-            console.error("Failed to create new Role" + e);
-            return fail(500, { message: "Failed to create new Role" });
+            console.error("Failed to create new Weekday" + e);
+            return fail(500, { message: "Failed to create new Weekday" });
         }
 
-        throw redirect(302, "/role");
+        throw redirect(302, "/weekday");
     },
-    updateRole: async ({ request, locals }) => {
+    updateWeekday: async ({ request, locals }) => {
         const session = await locals.auth.validate();
         if (!session) {
             throw redirect(302, "/");
@@ -40,20 +40,20 @@ export const actions: Actions = {
         const formData = Object.fromEntries(await request.formData());
 
         try {
-            await prismaClient.role.update({
+            await prismaClient.weekday.update({
                 where: { id: Number(formData.id) },
                 data: {
                     name: (formData.role as string) || "",
                 },
             });
         } catch (e) {
-            console.error("Failed to create new Role" + e);
-            return fail(500, { message: "Failed to create new Role" });
+            console.error("Failed to create new Weekday" + e);
+            return fail(500, { message: "Failed to create new Weekday" });
         }
 
-        throw redirect(302, "/role");
+        throw redirect(302, "/weekday");
     },
-    deleteRole: async ({ request, locals }) => {
+    deleteWeekday: async ({ request, locals }) => {
         const session = await locals.auth.validate();
         if (!session) {
             throw redirect(302, "/");
@@ -62,14 +62,14 @@ export const actions: Actions = {
         const formData = Object.fromEntries(await request.formData());
 
         try {
-            await prismaClient.role.delete({
+            await prismaClient.weekday.delete({
                 where: { id: Number(formData.id) },
             });
         } catch (e) {
-            console.error("Failed to create new Role" + e);
-            return fail(500, { message: "Failed to create new Role" });
+            console.error("Failed to create new Weekday" + e);
+            return fail(500, { message: "Failed to create new Weekday" });
         }
 
-        throw redirect(302, "/role");
+        throw redirect(302, "/weekday");
     },
 };

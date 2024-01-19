@@ -24,34 +24,13 @@
         }
     }
 
-    async function handleDelete(event) {
-        event.preventDefault();
-
-        if (confirm("Möchtest du die Person wirklich löschen?")) {
-            const formData = new FormData(event.target);
-
-            const response = await fetch("?/deletePerson", {
-                method: "POST",
-                body: new URLSearchParams([...formData]),
-            });
-
-            if (response.ok) {
-                // Redirect to home if the delete was successful
-                location.reload();
-            } else {
-                // Handle the error
-                console.error("Failed to delete post");
-            }
-        }
-    }
-
     function openFileInput() {
-        const fileInput = document.getElementById("avatar");
+        const fileInput = document.getElementById("image");
         fileInput.click();
     }
 
-    function changeAvatar() {
-        const form = document.querySelector('form[action="?/updateAvatar"]');
+    function changeImage() {
+        const form = document.querySelector('form[action="?/updateImage"]');
         form.submit();
     }
 </script>
@@ -136,14 +115,25 @@
                 on:click={openFileInput}
                 class="group-hover:scale-102 transition-all duration-100 flex relative group hover:scale-105"
             >
-                <img
-                    class="rounded-md shadow-md"
-                    height="200"
-                    width="200"
-                    src={person.avatar.url +
-                        "?h=350&w=350&crop=faces&lossless=false&auto=compress&fit=crop&fm=webp"}
-                    alt=""
-                />
+                {#if person.image}
+                    <img
+                        height="180"
+                        width="180"
+                        class="rounded-lg shadow-md"
+                        src={person.image.url +
+                            "?h=180&w=180&crop=faces&lossless=false&auto=compress&fit=crop&fm=webp"}
+                        alt=""
+                    />
+                {:else}
+                    <img
+                        height="180"
+                        width="180"
+                        class="rounded-lg shadow-md"
+                        src="/images/avatar.webp"
+                        alt=""
+                    />
+                {/if}
+
                 <div
                     class="group-hover:opacity-100 opacity-0 absolute transfrom -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 z-10 transition-all duration-100"
                 >
@@ -166,23 +156,18 @@
     </div>
 </div>
 
-<form action="?/updateAvatar" enctype="multipart/form-data" method="POST">
+<form action="?/updateImage" enctype="multipart/form-data" method="POST">
     <input
         type="file"
-        id="avatar"
-        name="avatar"
+        id="image"
+        name="image"
         required
-        on:change={changeAvatar}
+        on:change={changeImage}
         class="hidden"
     />
 </form>
 
-<form
-    class="hidden"
-    action="?/deletePerson"
-    method="POST"
-    on:submit={handleDelete}
-/>
+<form class="hidden" action="?/deletePerson" method="POST" />
 
 <style>
     input[type="text"],

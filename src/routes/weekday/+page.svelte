@@ -2,20 +2,20 @@
     import { onMount } from "svelte";
     import { slide } from "svelte/transition";
 
-    let roles: Role[] = [];
+    let weekdays: Weekday[] = [];
 
     let showInputFields: boolean[] = [];
 
     let updateElement: HTMLFormElement;
     let deleteElement: HTMLFormElement;
-    let deleteRole = 0;
+    let deleteWeekday = 0;
 
     onMount(async () => {
         try {
-            const response = await fetch("/api/v1/main/getRoles");
+            const response = await fetch("/api/v1/main/getWeekdays");
             const data = await response.json();
 
-            roles = data.roles;
+            weekdays = data.weekdays;
         } catch (error) {
             console.error("Error:", error);
         }
@@ -42,7 +42,9 @@
     async function handleDelete() {
         if (
             confirm(
-                "Möchtest du " + roles[deleteRole].name + " wirklich löschen?"
+                "Möchtest du " +
+                    weekdays[deleteWeekday].name +
+                    " wirklich löschen?"
             )
         ) {
             deleteElement.submit();
@@ -52,12 +54,12 @@
 
 <svelte:window on:click={handleClickOutside} />
 
-<form action="?/createRole" method="POST" class="w-80">
+<form action="?/createWeekday" method="POST" class="w-80">
     <input
         type="text"
-        name="role"
-        id="role"
-        placeholder="neue Rolle"
+        name="weekday"
+        id="weekday"
+        placeholder="neuer Tag"
         required
     />
 
@@ -72,18 +74,18 @@
 <div class="mb-5"></div>
 
 <ul class="grid">
-    {#each roles as role, i}
+    {#each weekdays as weekday, i}
         <li in:slide class="flex h-10 w-80 my-1">
             {#if showInputFields[i] == true}
                 <form
-                    action="?/updateRole"
+                    action="?/updateWeekday"
                     method="POST"
                     class="flex -mt-2"
                     bind:this={updateElement}
                 >
                     <input
                         type="text"
-                        bind:value={role.name}
+                        bind:value={weekday.name}
                         name="role"
                         class="w-full"
                     />
@@ -91,7 +93,7 @@
                         hidden
                         type="number"
                         name="id"
-                        bind:value={role.id}
+                        bind:value={weekday.id}
                     />
 
                     <button
@@ -103,11 +105,11 @@
                 </form>
 
                 <form
-                    action="?/deleteRole"
+                    action="?/deleteWeekday"
                     method="POST"
                     class="group ml-3 -mr-6"
                     on:submit|preventDefault={() => {
-                        deleteRole = i;
+                        deleteWeekday = i;
                         handleDelete();
                     }}
                     bind:this={deleteElement}
@@ -116,7 +118,7 @@
                         hidden
                         type="number"
                         name="id"
-                        bind:value={role.id}
+                        bind:value={weekday.id}
                     />
                     <button class="flex items-center justify-center">
                         <svg
@@ -143,7 +145,7 @@
                         <div class="w-full flex justify-between">
                             <div class="ml-2">
                                 <p>
-                                    {role.name}
+                                    {weekday.name}
                                 </p>
                             </div>
 

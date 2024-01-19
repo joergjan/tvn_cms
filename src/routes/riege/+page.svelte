@@ -17,14 +17,6 @@
         }
     });
 
-    function showModal() {
-        if (showRiege) {
-            showRiege = false;
-        } else {
-            showRiege = true;
-        }
-    }
-
     function getHours(isoTime) {
         let date = new Date(isoTime);
         let hours = date.getUTCHours();

@@ -16,4 +16,5 @@ export const titles = [
         short: "ga",
     },
     { name: "Rollen", href: "/role", short: "ro" },
+    { name: "Tage", href: "/weekday", short: "ro" },
 ];

@@ -4,17 +4,21 @@
     import { BlobServiceClient } from "@azure/storage-blob";
     import RiegeModal from "$lib/components/RiegeModal.svelte";
     import { tick } from "svelte";
+    import { currentPage } from "$lib/scripts/stores";
+    import IntersectionObserver from "$lib/components/IntersectionObserver.svelte";
+    import { enhance } from "$app/forms";
 
     export let data: PageData;
     $: ({ riege } = data);
     let additionalLeiter = [false, false, false, false];
 
-    let isLoading = true;
-    let weekdays = [];
+    let weekdays: Weekday[] = [];
     let additionalTrainingszeit = false;
-    let personen = [];
-    let riegen = [];
+    let personen: Person[] = [];
     let preview = false;
+    let galery: Galery;
+    let previewImages: number[] = [];
+    let selectedImages: number[] = [];
 
     function handleClose() {
         togglePreview();
@@ -71,8 +75,17 @@
             const data = await response.json();
 
             weekdays = data.weekdays;
+        } catch (error) {
+            console.error("Error:", error);
+        }
 
-            isLoading = false;
+        try {
+            const response = await fetch(
+                "/api/v1/main/galery/getImages/" + riege.galeryId
+            );
+            const data = await response.json();
+
+            galery = data.galery;
         } catch (error) {
             console.error("Error:", error);
         }
@@ -83,12 +96,24 @@
 
             personen = data.personen;
 
-            isLoading = false;
-
             checkLeiter();
         } catch (error) {
             console.error("Error:", error);
         }
+
+        riege.image.forEach((riegeImage, index) => {
+            if (
+                galery.image.some(
+                    (galleryImage) => galleryImage.id === riegeImage.id
+                )
+            ) {
+                previewImages.push(index);
+                selectedImages.push(riegeImage.id);
+            }
+        });
+
+        previewImages = previewImages;
+        selectedImages = selectedImages;
 
         if (riege.trainingszeiten.length > 1) {
             additionalTrainingszeit = true;
@@ -136,6 +161,29 @@
             }
         }
     }
+
+    async function handleSubmit(event) {
+        event.preventDefault();
+
+        const form = document.querySelector('form[action="?/updateImage"]');
+        const img1 = form.querySelector('input[name="img1"]');
+        const img2 = form.querySelector('input[name="img2"]');
+        const img3 = form.querySelector('input[name="img3"]');
+
+        selectedImages[0] ? (img1.value = selectedImages[0]) : null;
+        selectedImages[1] ? (img2.value = selectedImages[1]) : null;
+        selectedImages[2] ? (img3.value = selectedImages[2]) : null;
+
+        const formData = new FormData(form);
+        const response = await fetch(form.action, {
+            method: "POST",
+            body: formData,
+        });
+
+        if (!response.ok) {
+            console.error("Error submitting form:", response.statusText);
+        }
+    }
 </script>
 
 <div class="mb-10">
@@ -162,6 +210,18 @@
                 class="bg-tvblue hover:bg-tvbluelight py-2 px-3 rounded-md text-white group"
             >
                 <p class="group-hover:scale-105">Vorschau</p>
+            </button>
+        </div>
+        <div class="justify-center flex ml-2">
+            <button
+                on:click={() => {
+                    $currentPage = 3;
+                }}
+                class="bg-tvblue hover:bg-tvbluelight py-2 px-3 rounded-md text-white group"
+            >
+                <a href="/galery">
+                    <p class="group-hover:scale-105">Fotos hochladen</p>
+                </a>
             </button>
         </div>
         <div class="justify-center flex ml-2">
@@ -367,10 +427,88 @@
         trainingszeiten={riege.trainingszeiten}
         age={riege.age}
         description={riege.description}
-        riegeId={riege.id}
         personen={riege.person}
         images={riege.image}
     />
+{/if}
+
+{#if galery}
+    <div class="mt-12"></div>
+    <h2>{galery.name}</h2>
+
+    <ul
+        class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 grid-rows-auto"
+    >
+        {#each galery.image as photo, i}
+            <li class="relative hover:scale-102 h-48">
+                <IntersectionObserver animation="fade-in">
+                    <div>
+                        <img
+                            loading="lazy"
+                            class="block h-48 w-full rounded-md shadow-md object-cover object-center"
+                            src={photo.url}
+                            alt=""
+                        />
+                    </div>
+                    <div
+                        class="opacity-0 pointer-events-none !hover:opacity-100 w-full h-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transform text-3xl text-white bold"
+                    >
+                        vergrössern
+                    </div>
+                </IntersectionObserver>
+
+                <form
+                    action="?/updateImage"
+                    method="POST"
+                    use:enhance
+                    on:submit|preventDefault={handleSubmit}
+                >
+                    <input hidden type="number" name="img1" id="img1" />
+                    <input hidden type="number" name="img2" id="img2" />
+                    <input hidden type="number" name="img3" id="img3" />
+
+                    <button
+                        class={previewImages.indexOf(i) == -1
+                            ? "absolute inset-0 transition duration-100 group hover:bg-blue-500 hover:bg-opacity-50 rounded-md"
+                            : "absolute inset-0 transition duration-100 group bg-blue-500 bg-opacity-50 rounded-md"}
+                        on:click={() => {
+                            const index = previewImages.indexOf(i);
+                            if (index !== -1) {
+                                previewImages.splice(index, 1);
+                                previewImages = previewImages;
+                            } else {
+                                previewImages.push(i);
+                                selectedImages.push(galery.image[i].id);
+                                if (previewImages.length > 3) {
+                                    previewImages.shift();
+                                    selectedImages.shift();
+                                }
+                                previewImages = previewImages;
+                            }
+                        }}
+                    >
+                        <div
+                            class={previewImages.indexOf(i) == -1
+                                ? "hidden group-hover:flex justify-center items-center"
+                                : "flex justify-center items-center"}
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                height="65"
+                                viewBox="0 -960 960 960"
+                                width="65"
+                                class="fill-white"
+                            >
+                                <path
+                                    d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z"
+                                />
+                            </svg>
+                        </div>
+                    </button>
+                </form>
+            </li>
+        {/each}
+    </ul>
 {/if}
 
 <style>

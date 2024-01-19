@@ -41,7 +41,7 @@ export async function GET({ request, locals, params }) {
                 ],
             },
             include: {
-                avatar: true,
+                image: true,
                 riegen: {
                     include: {
                         riege: true,

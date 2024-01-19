@@ -25,16 +25,13 @@ export async function GET({ request, locals }) {
                     include: {
                         person: {
                             include: {
-                                avatar: true,
+                                image: true,
                             },
                         },
                     },
                 },
                 image: {
                     take: 3,
-                    orderBy: {
-                        date: "desc",
-                    },
                 },
             },
         });

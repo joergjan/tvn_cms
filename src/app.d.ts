@@ -1,5 +1,6 @@
 /// <reference types="svelte-adapter-azure-swa" />
 import { PrismaClient } from "@prisma/client/edge";
+import { withAccelerate } from "@prisma/extension-accelerate";
 
 declare global {
     namespace App {
@@ -22,84 +23,96 @@ declare global {
         type DatabaseSessionAttributes = {};
     }
 
-    declare namespace tvn {
-        type Riege = {
-            id: number;
-            name: string;
-            description: string;
-            age: string;
-            person: PersonRiege[];
-            trainingszeiten: Trainingszeit[];
-            image: Image[];
-        };
+    type Riege = {
+        id: number;
+        name: string;
+        description: string;
+        age: string;
+        image?: Image[];
+        person?: PersonRiege[];
+        trainingszeiten?: Trainingszeit[];
+    };
 
-        type Role = {
-            id: number;
-            name: string;
-        };
+    type Role = {
+        id: number;
+        name: string;
+        personId?: number | null;
+    };
 
-        type Person = {
-            id: number;
-            firstName: string;
-            name: string;
-            isVorstand: boolean;
-            email: string;
-            roleId: number;
-            avatar?: Avatar;
-            riegen: PersonRiege[];
-        };
+    type Person = {
+        id: number;
+        firstName: string;
+        name: string;
+        isVorstand: boolean | null;
+        email: string;
+        role?: Role | null;
+        image?: Image | null;
+        riegen?: PersonRiege[];
+    };
 
-        type Trainingszeit = {
-            id: number;
-            riege: Riege;
-            riegeId: number;
-            weekday: Weekday;
-            weekdayId: number;
-            from: Date;
-            to: Date;
-        };
+    type Trainingszeit = {
+        id: number;
+        riegeId: number;
+        weekdayId: number;
+        from: Date;
+        to: Date;
+    };
 
-        type Weekday = {
-            id: number;
-            name: string;
-            trainingszeiten: Trainingszeit[];
-        };
+    type Weekday = {
+        id: number;
+        name: string;
+        trainingszeiten?: Trainingszeit[];
+    };
 
-        type ImageFolder = {
-            id: number;
-            name: string;
-            image: Image[];
-        };
+    type Galery = {
+        id: number;
+        name: string;
+        image?: Image[];
+    };
 
-        type PersonRiege = {
-            person: Person;
-            personId: number;
-            riege: Riege;
-            riegeId: number;
-        };
+    type PersonRiege = {
+        personId: number;
+        riegeId: number;
+    };
 
-        type Image = {
-            id: number;
-            url: string;
-            date: Date;
-            riege: Riege;
-            riegeId: number;
-            imageFolder: ImageFolder;
-            imageFolderId: number;
-        };
+    type Image = {
+        id: number;
+        url: string;
+        date: Date;
+        galeryId?: number;
+        riegeId?: number;
+        postId?: number;
+        personId?: number;
+    };
 
-        type Avatar = {
-            id: number;
-            url: string;
-            date: Date;
-            person: Person;
-            personId: number;
-        };
+    type Post = {
+        id: number;
+        title: string;
+        text: string;
+        date: Date;
+        image: Image[];
+    };
 
-        type Post = {
-            id: number;
-        };
-    }
+    type User = {
+        id: string;
+        name: string;
+        username: string;
+        isAdmin: boolean;
+        isEditor: boolean;
+    };
+
+    type Session = {
+        id: string;
+        user_id: string;
+        active_expires: bigint;
+        idle_expires: bigint;
+    };
+
+    type Key = {
+        id: string;
+        hashed_password: string | null;
+        user_id: string;
+    };
 }
 
 export {};
