@@ -1,6 +1,7 @@
 <script lang="ts">
     import type { PageData } from "../$types";
     import { onMount } from "svelte";
+    import { enhance } from "$app/forms";
 
     import { tick } from "svelte";
 
@@ -67,9 +68,10 @@
 
     <div class="grid grid-cols-2">
         <form
-            action="?/updateRiege"
+            action="?/updatePerson"
             method="POST"
             enctype="multipart/form-data"
+            use:enhance
         >
             <div class="mb-2">
                 <label for="firstName">Vorname</label>

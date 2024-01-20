@@ -18,6 +18,10 @@ export const auth = lucia({
             isEditor: data.isEditor,
         };
     },
+    sessionExpiresIn: {
+        activePeriod: 43200000,
+        idlePeriod: 604800000,
+    },
 });
 
 export type Auth = typeof auth;

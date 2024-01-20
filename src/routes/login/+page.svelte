@@ -1,5 +1,9 @@
+<script lang="ts">
+    import { enhance } from "$app/forms";
+</script>
+
 <main>
-    <form method="POST">
+    <form method="POST" use:enhance>
         <hgroup>
             <h1>Login</h1>
         </hgroup>

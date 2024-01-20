@@ -69,7 +69,7 @@ export const actions: Actions = {
     updateImage: async ({ params, locals, request }) => {
         const session = await locals.auth.validate();
         if (!session) {
-            throw redirect(302, "/login");
+            throw redirect(302, "/");
         }
 
         const formData = Object.fromEntries(await request.formData());

@@ -216,7 +216,12 @@
         </div>
     </div>
     <div class="mt-5" />
-    <form action="?/updateRiege" method="POST" enctype="multipart/form-data">
+    <form
+        action="?/updateRiege"
+        method="POST"
+        enctype="multipart/form-data"
+        use:enhance
+    >
         <div>
             <label for="description">Beschreibung</label>
             <textarea
