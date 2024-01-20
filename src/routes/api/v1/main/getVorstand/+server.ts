@@ -41,7 +41,7 @@ export async function GET({ request, locals }) {
                 },
                 orderBy: {
                     role: {
-                        id: "desc",
+                        id: "asc",
                     },
                 },
                 cacheStrategy: {
