@@ -50,6 +50,11 @@
     };
 </script>
 
+<svelte:head>
+    <title>Person</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div class="mb-10">
     <h1>Person erstellen</h1>
 

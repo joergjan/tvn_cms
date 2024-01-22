@@ -52,6 +52,11 @@
     }
 </script>
 
+<svelte:head>
+    <title>Post</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div class="mb-10">
     <h1>{post.title} bearbeiten</h1>
 

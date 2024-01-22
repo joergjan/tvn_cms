@@ -40,6 +40,11 @@
     }
 </script>
 
+<svelte:head>
+    <title>Person</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <h1>Personen Verwalten</h1>
 
 <div class="flex mb-3">

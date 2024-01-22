@@ -91,6 +91,11 @@
 
 <svelte:window on:click={handleClickOutside} />
 
+<svelte:head>
+    <title>Gallerie</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div class="grid md:grid-cols-2">
     <div>
         <h2 class="mb-2">Fotos hochladen</h2>

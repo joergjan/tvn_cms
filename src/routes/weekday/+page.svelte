@@ -52,6 +52,11 @@
     }
 </script>
 
+<svelte:head>
+    <title>Wochentage</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <h1>Wochentage</h1>
 
 <p>Änderungen benötigen 3 Stunden, bis sie ersichtlich sind.</p>

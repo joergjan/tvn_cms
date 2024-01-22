@@ -15,6 +15,11 @@
     });
 </script>
 
+<svelte:head>
+    <title>Post</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <h1>Beiträge Verwalten</h1>
 
 <div class="flex mb-3">

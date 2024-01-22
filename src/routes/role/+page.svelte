@@ -52,6 +52,11 @@
 
 <svelte:window on:click={handleClickOutside} />
 
+<svelte:head>
+    <title>Rollen</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <h1>Rollen</h1>
 
 <p>Änderungen benötigen 3 Stunden, bis sie ersichtlich sind.</p>

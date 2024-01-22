@@ -1,3 +1,7 @@
+<svelte:head>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <form method="POST">
     <hgroup>
         <h2>Register</h2>

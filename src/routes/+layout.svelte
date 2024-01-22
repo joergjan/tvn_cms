@@ -47,6 +47,10 @@
     }
 </script>
 
+<svelte:head>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div class="bg-tvblue h-3" />
 
 <nav class="sticky top-0 z-10">

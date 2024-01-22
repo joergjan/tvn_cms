@@ -2,6 +2,10 @@
     import { enhance } from "$app/forms";
 </script>
 
+<svelte:head>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <main>
     <form method="POST" use:enhance>
         <hgroup>

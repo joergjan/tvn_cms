@@ -31,11 +31,8 @@
 </script>
 
 <svelte:head>
-    <title>TVN | Riegen</title>
-    <meta
-        name="description"
-        content="Im TV Nussbaumen findest du eine vielfältige Auswahl an Riegen für jeden Geschmack. Egal wie alt du bist oder welches Fitnesslevel du hast, bei uns gibt es bestimmt eine Riege, die zu dir passt! Hier findest du eine Übersicht unserer Riegen."
-    />
+    <title>Riegen</title>
+    <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <h1 class="h1">Riegen verwalten</h1>

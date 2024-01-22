@@ -75,6 +75,11 @@
     };
 </script>
 
+<svelte:head>
+    <title>Riegen</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div class="mb-10">
     <h1>Riege erstellen</h1>
 

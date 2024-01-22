@@ -36,6 +36,11 @@
     }
 </script>
 
+<svelte:head>
+    <title>Person</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div class="mb-10">
     <h1>{person.firstName} {person.name} bearbeiten</h1>
 

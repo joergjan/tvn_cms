@@ -7,6 +7,11 @@
 
 <h1>Hallo {data.name}!</h1>
 
+<svelte:head>
+    <title>TV Nussbaumen</title>
+    <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <div>
     <button
         class="bg-tvblue hover:bg-tvbluelight text-white group px-3 py-2 rounded-md"
