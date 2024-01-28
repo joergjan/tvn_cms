@@ -4,7 +4,7 @@ import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals }) => {
     const session = await locals.auth.validate();
-    if (session) {
+    if (!session) {
         throw redirect(302, "/");
     }
 };
