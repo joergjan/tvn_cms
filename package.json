@@ -14,7 +14,7 @@
     },
     "devDependencies": {
         "@prisma/nextjs-monorepo-workaround-plugin": "^5.7.1",
-        "@sveltejs/kit": "^2.3.2",
+        "@sveltejs/kit": "^2.4.3",
         "@tailwindcss/aspect-ratio": "^0.4.2",
         "@tsconfig/svelte": "^3.0.0",
         "autoprefixer": "^10.4.13",
