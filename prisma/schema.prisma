@@ -13,18 +13,18 @@ model Riege {
   name            String
   description     String
   age             String
-  image           Image[]
+  imageRiege      ImageRiege[]
   person          PersonRiege[]
   trainingszeiten Trainingszeit[]
-  galery  Galery @relation(fields: [galeryId], references: [id])
+  galery          Galery          @relation(fields: [galeryId], references: [id])
   galeryId        Int
 }
 
 model Role {
-  id   Int          @id @default(autoincrement())
-  name String
-  person Person?    @relation(fields: [personId], references: [id])
-  personId Int?     @unique
+  id       Int     @id @default(autoincrement())
+  name     String
+  person   Person? @relation(fields: [personId], references: [id])
+  personId Int?    @unique
 }
 
 model Person {
@@ -71,25 +71,33 @@ model PersonRiege {
 }
 
 model Image {
-  id            Int          @id @default(autoincrement())
-  url           String
-  date          DateTime     @default(now())
-  galery        Galery?      @relation(fields: [galeryId], references: [id], onDelete: Cascade)
-  galeryId      Int?         
-  riege         Riege?       @relation(fields: [riegeId], references: [id])
-  riegeId       Int?         
-  post          Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId        Int?         
-  person        Person?      @relation(fields: [personId], references: [id], onDelete: Cascade) 
-  personId      Int?         @unique
+  id       Int          @id @default(autoincrement())
+  url      String
+  date     DateTime     @default(now())
+  galery   Galery?      @relation(fields: [galeryId], references: [id], onDelete: Cascade)
+  galeryId Int?
+  post     Post?        @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId   Int?
+  person   Person?      @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId Int?         @unique
+  riegen   ImageRiege[]
+}
+
+model ImageRiege {
+  imageId Int
+  riegeId Int
+  image   Image @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  riege   Riege @relation(fields: [riegeId], references: [id], onDelete: Cascade)
+
+  @@id([imageId, riegeId])
 }
 
 model Post {
-  id      Int      @id @default(autoincrement())
-  title   String
-  text    String
-  date    DateTime @default(now())
-  image   Image[]
+  id    Int      @id @default(autoincrement())
+  title String
+  text  String
+  date  DateTime @default(now())
+  image Image[]
 }
 
 model User {
